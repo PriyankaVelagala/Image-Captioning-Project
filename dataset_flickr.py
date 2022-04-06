@@ -8,8 +8,10 @@ from torch.utils import data as data
 from torchvision import transforms as transforms
 import matplotlib.pyplot as plt
 import json
-import pandas as pd 
+#import pandas as pd 
 import transformers
+import csv 
+from collections import defaultdict
 
 
 
@@ -29,7 +31,8 @@ class Flickr30kData(data.Dataset):
         self.ds_path = kwargs['ds_path']
         self.captions_f = kwargs['ds_path'] + kwargs['captions_dir'] +  '/' + kwargs['captions_fname']
         self.imgs_dir = kwargs['ds_path'] + kwargs['images_dir'] + '/' + self.stage 
-        self.img_captions_df = self.load_captions()
+        #self.img_captions_df = self.load_captions()
+        self.captions_dict = self.load_captions()
         self.img_files_dict = self.map_img_to_idx() 
         
         if logger:
@@ -42,8 +45,35 @@ class Flickr30kData(data.Dataset):
     """
     Returns contents of file 
     for specified stage as dataframe 
+    """
+    def load_captions(self):
+        #all files in current stage 
+        files = os.listdir(self.imgs_dir)
+        
+        captions_dict = defaultdict(list)
+        
+        line_count = 0 
+        
+        with open(self.captions_f, 'r') as file:
+            reader = csv.reader(file, delimiter = "|")
+            for row in reader:
+                #ignore first line = column names 
+                if line_count == 0:
+                    line_count += 1
+                    continue
+                    
+                if str(row[0]) in files:
+                    img_id = row[0].split('.')[0]
+                    captions_dict[img_id].append(row[2].lstrip().rstrip())
+                
+                line_count += 1 
+                
+        return captions_dict 
+                        
     
     """
+    old load captions uses pandas 
+    
     def load_captions(self):
         #load into a dataframe + transformation 
         col_names = ["img_name", "comment_number", "comment"]
@@ -56,7 +86,7 @@ class Flickr30kData(data.Dataset):
         
         #print(df.head())        
         return df 
-    
+    """
     
     """
     Given an index
@@ -64,11 +94,12 @@ class Flickr30kData(data.Dataset):
     """
     def get_image_caption(self, idx):
         fname = str(self.img_files_dict[idx])
-        df = self.img_captions_df
-        captions = list(df[df.img_name == fname].values[0][1:]) 
-        return captions
+        img = fname.split('.')[0]
+        #df = self.img_captions_df
+        #captions = list(df[df.img_name == fname].values[0][1:]) 
+        return self.captions_dict[img]
     
-     """
+    """
     Given an index
     returns all image captions as a list of tokens
     """
@@ -80,6 +111,7 @@ class Flickr30kData(data.Dataset):
                                    return_attention_mask = False, 
                                    max_length = 40, #max caption length = 83, mean = 40.1  - hperparameter?
                                    padding = "max_length",
+                                   truncation = True, #truncates if captin exceeds max length, ensure all output of same length 
                                    return_tensors = "pt")
         return tokenized_captions
         
