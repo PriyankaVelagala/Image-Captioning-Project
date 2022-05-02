@@ -23,7 +23,7 @@ class CollateCustom:
         X = torch.cat(X, dim = 0)
         
         y = [item[2] for item in batch]
-        y = pad_sequence(y, batch_first=False, padding_value=self.pad_val)
+        y = pad_sequence(y, batch_first=True, padding_value=self.pad_val)
         
         return idxs, X, y
     

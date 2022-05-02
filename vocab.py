@@ -39,9 +39,11 @@ class Vocabulary(object):
         with open(self.captions_file, 'r') as file:
             reader = csv.reader(file, delimiter = "|")
             for row in reader:
-                if line_count == 0:
+                if line_count == 0 :#or line_count % 5 != 1: #add when only reading first cap
                     line_count += 1
                     continue
+                elif line_count ==500001: #fix based on dataset size
+                    break
                 else:
                     caption = row[2].lstrip().rstrip()
                     tokens = nltk.tokenize.word_tokenize(caption.lower())

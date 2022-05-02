@@ -17,11 +17,14 @@ class Encoder(nn.Module):
         super().__init__()
         
         #initialize model  
-        self.model = models.resnet50(pretrained = False, progress = False)
+        #self.model = models.resnet50(pretrained = True, progress = False)
+        self.model = models.inception_v3(pretrained=True, aux_logits=False)
         # disable requires_grad for all layers
         self.set_parameter_requires_grad(extract_features)
         #re-intialize last layer 
         self.model.fc = nn.Linear(self.model.fc.in_features, embed_size) 
+        #self.model.fc = nn.Linear(self.inception.fc.in_features, embed_size)
+
         
         #add activation and dropout 
         self.relu = nn.ReLU() 
@@ -114,7 +117,7 @@ class EncodertoDecoder(nn.Module):
     """
     Used during test time to generate captions
     """
-    def caption_image(self, image, vocab, max_length = 20): 
+    def caption_image(self, image, vocab, max_length = 10): 
         caption = []
         
         with torch.no_grad():
