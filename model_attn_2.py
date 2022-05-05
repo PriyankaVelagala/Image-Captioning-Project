@@ -35,10 +35,6 @@ class Encoder(nn.Module):
         
         
     def forward(self, X): 
-        """
-        X = self.model(X) 
-        X = self.dropout(self.relu(X))
-        """
         X = self.model(X)
         # resize to (batch, size*size, featuremaps) 
         batch, feature_maps, size_1, size_2 = X.size() 
@@ -62,7 +58,6 @@ class Decoder(nn.Module):
         
         self.vocab_size = vocab_size
         self.num_features = 2048 #feature maps from cnn 
-        self.attn_dim = attn_dim
         
         #resize vocab 
         self.embedding = nn.Embedding(vocab_size, embed_size)
@@ -191,7 +186,13 @@ class EncodertoDecoder(nn.Module):
             embeds = self.decoder.embedding(predicted_word_idx.unsqueeze(0))
         
         #covert the vocab idx to words and return sentence
-        return [vocab.idx_to_str[idx] for idx in captions]
+        words = [vocab.idx_to_str[idx] for idx in captions]
+        # Remove EOS
+        words = words[:-1]
+        
+        sentence= ' '.join(word for word in words)
+    
+        return sentence
         
 
 """
@@ -222,11 +223,3 @@ class BahdanauAttention(nn.Module):
         attention_weights = attention_weights.sum(dim=1) 
 
         return soft_maxed_attention, attention_weights
-
-    
-    
-    
-    
-    
-    
-

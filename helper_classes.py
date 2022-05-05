@@ -4,7 +4,8 @@ from nltk.translate.bleu_score import sentence_bleu
 import os
 
 
-CHECKPOINT_DIRECTORY = "model_checkpoints"
+CHECKPOINT_DIRECTORY = "/content/drive/MyDrive/Colab Notebooks/sequences/sequences2/model_checkpoints"
+
 
 
 """
@@ -12,8 +13,9 @@ Class to create batches
 """
 class CollateCustom:
     
-    def __init__(self, pad_value):
+    def __init__(self, pad_value, batch_first=True):
         self.pad_val = pad_value
+        self.batch_first = batch_first
     
     def __call__(self, batch):
         
@@ -23,7 +25,7 @@ class CollateCustom:
         X = torch.cat(X, dim = 0)
         
         y = [item[2] for item in batch]
-        y = pad_sequence(y, batch_first=True, padding_value=self.pad_val)
+        y = pad_sequence(y, batch_first=self.batch_first, padding_value=self.pad_val)
         
         return idxs, X, y
     
@@ -55,17 +57,19 @@ def load_checkpoint(fname, model, optimizer):
 For inference
 """ 
 def save_model(model, fname):
-    torch.save(model, fname) 
+    path = CHECKPOINT_DIRECTORY + "/" + fname 
+    torch.save(model, path) 
     print(f"Saved model {fname}!")
     
 def load_model(model, fname):
-    model.load_state_dict(torch.load(fname)) 
+    path = CHECKPOINT_DIRECTORY + "/" + fname 
+    model.load_state_dict(torch.load(path)) 
     print(f"Loaded from model {fname}!")
     
 """
 calculate bleu score between expected and predicted
 """
-def get_bleu_score(reference, predicted):
+def get_bleu_4_score(reference, predicted):
     return  sentence_bleu(reference, predicted)
 
 
