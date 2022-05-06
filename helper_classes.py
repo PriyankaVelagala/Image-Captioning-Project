@@ -7,7 +7,6 @@ import os
 CHECKPOINT_DIRECTORY = "/content/drive/MyDrive/Colab Notebooks/sequences/sequences2/model_checkpoints"
 
 
-
 """
 Class to create batches
 """
@@ -69,8 +68,8 @@ def load_model(model, fname):
 """
 calculate bleu score between expected and predicted
 """
-def get_bleu_4_score(reference, predicted):
-    return  sentence_bleu(reference, predicted)
+def get_bleu_score(reference, predicted, weights=(0.25,0.25,0.25,0.25)):
+    return  sentence_bleu(reference, predicted, weights)
 
 
 
