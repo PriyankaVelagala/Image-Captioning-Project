@@ -5,7 +5,7 @@ from nltk.translate.bleu_score import SmoothingFunction
 import os
 
 
-CHECKPOINT_DIRECTORY = "/content/drive/MyDrive/Colab Notebooks/sequences/sequences2/model_checkpoints"
+CHECKPOINT_DIRECTORY = "/content/drive/MyDrive/Colab Notebooks/INM706_CW/model_checkpoints"
 
 
 """
