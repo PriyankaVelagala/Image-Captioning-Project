@@ -1,6 +1,7 @@
 from torch.nn.utils.rnn import pad_sequence  
 import torch
 from nltk.translate.bleu_score import sentence_bleu
+from nltk.translate.bleu_score import SmoothingFunction
 import os
 
 
@@ -69,7 +70,9 @@ def load_model(model, fname):
 calculate bleu score between expected and predicted
 """
 def get_bleu_score(reference, predicted, weights=(0.25,0.25,0.25,0.25)):
-    return  sentence_bleu(reference, predicted, weights)
+    cc = SmoothingFunction()
+    return  sentence_bleu(reference, predicted, smoothing_function=cc.method1,
+        weights=weights)
 
 
 
