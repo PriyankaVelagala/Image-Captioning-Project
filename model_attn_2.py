@@ -131,8 +131,7 @@ class EncodertoDecoder(nn.Module):
         self.encoder = Encoder() 
         self.decoder = Decoder(vocab_size, embed_size, hidden_size, num_layers, attn_dim)
         
-        
-        
+             
     """
     Forward methods
     X --> images 
@@ -188,11 +187,11 @@ class EncodertoDecoder(nn.Module):
         #covert the vocab idx to words and return sentence
         words = [vocab.idx_to_str[idx] for idx in captions]
         # Remove EOS
-        words = words[:-1]
-        
-        sentence= ' '.join(word for word in words)
+        # words = words[:-1]
+
+        return words, alphas
+
     
-        return sentence
         
 
 """
