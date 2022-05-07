@@ -16,12 +16,6 @@ from collections import defaultdict
 
 logger = True
 
-"""
-TODO:
-1. might need to update how captions are stored (self.img_captions, returns dataframe for now) - DONE 
-"""
-
-
 
 class Flickr7kData(data.Dataset):
     
@@ -68,7 +62,7 @@ class Flickr7kData(data.Dataset):
                     
                 if str(row[0]) in files:
                     img_id = row[0].split('.')[0]
-                    #caption = "<SOS> " + row[2].lstrip().rstrip() + " <EOS>"
+
                     caption = row[2].lstrip().rstrip() 
                     captions_dict[img_id].append(caption)
                 
@@ -84,7 +78,7 @@ class Flickr7kData(data.Dataset):
         for i in range(len(self.captions_dict)):
             img_id = str(self.img_files_dict[5*i].split('.')[0])
             for j in range(5):
-                idx_to_cap_dict[5*i +j ] = self.captions_dict[img_id][j]
+                idx_to_cap_dict[(5*i)+j] = self.captions_dict[img_id][j]
 
         return idx_to_cap_dict
     
@@ -129,8 +123,12 @@ class Flickr7kData(data.Dataset):
     def map_img_to_idx(self):
         #get all file names for stage
         fnames = os.listdir(self.imgs_dir)
+        # Remove duplicates. Google Drive issue
+        fnames = [ name for name in fnames if "(1)" not in name]
+
+        print(f'length = {len(fnames)}')
         fname_dict = {} 
-        
+
         for idx, fname in enumerate(fnames):
             for i in range(0,5):
                 fname_dict[5*idx + i] = fname 
@@ -152,26 +150,19 @@ class Flickr7kData(data.Dataset):
         if self.stage == "train":
             
             transform_train = transforms.Compose([ 
-                transforms.Resize(256),                          # smaller edge of image resized to 256
+                transforms.Resize(299),                          # smaller edge of image resized to 299
                 transforms.RandomCrop(224),                      # get 224x224 crop from random location
                 transforms.RandomHorizontalFlip(),               # horizontally flip image with probability=0.5
                 transforms.ToTensor(),                           # convert the PIL Image to a tensor
                 transforms.Normalize((0.485, 0.456, 0.406),      # normalize image for pre-trained model
                                      (0.229, 0.224, 0.225))]
             )
-            """
-            transform_train = transforms.Compose([
-                transforms.Resize((299, 299)),
-                transforms.ToTensor()
-                #transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-            ]) 
-            """
             
             img = transform_train(img)
                 
         else: 
             transform_test = transforms.Compose([ 
-                            transforms.Resize((224,224)),                   # smaller edge of image resized to 256
+                            transforms.Resize((299,299)),                   # smaller edge of image resized to 229
                             transforms.ToTensor(),                           # convert the PIL Image to a tensor
                             transforms.Normalize((0.485, 0.456, 0.406),      # normalize image for pre-trained model
                                                  (0.229, 0.224, 0.225))])
