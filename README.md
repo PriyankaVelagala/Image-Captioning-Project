@@ -19,5 +19,9 @@ The original dataset can be found here:
 
 https://www.kaggle.com/datasets/hsankesara/flickr-image-dataset
 
+To load our trained model, get the .pth files from the link below and copy them in the INM706_CW/model_checkpoints folder.
+
+https://drive.google.com/drive/folders/1-56n9AWjGCpCq08-XATVmc3bw0bIY1AG?usp=sharing
+
 The notebook should be able to run with this setup. We recommend copying over the 1000 images from the test folder
 on the google drive link above into your own drive to replicate the tests.
